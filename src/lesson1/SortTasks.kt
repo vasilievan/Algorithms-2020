@@ -2,6 +2,15 @@
 
 package lesson1
 
+import java.io.IOException
+import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
+import java.nio.file.Files
+import java.nio.file.InvalidPathException
+import java.nio.file.Paths
+import java.util.*
+import kotlin.coroutines.coroutineContext
+
 /**
  * Сортировка времён
  *
@@ -62,8 +71,48 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val inputPath = Paths.get(inputName)
+    val lines = Files.readAllLines(inputPath)
+    val addresses = sortedMapOf<String, SortedMap<Int, SortedSet<String>>>()
+    lines.forEach { line ->
+        println(line)
+        val matchResult =
+            Regex("""([A-ZА-ЯЁ][A-Za-zА-Яа-яё\-]* [А-ЯЁA-Z][A-Za-zА-Яа-яёЁ\-]*) - ([А-ЯЁA-Z][A-Za-zА-Яа-яё\-]*) (\d+)""").matchEntire(line)
+                ?: throw IllegalArgumentException("Некорректный формат файла.")
+        val regexGroups = matchResult.groupValues
+        val houseNumber = regexGroups[3].toInt()
+        if (addresses[regexGroups[2]] != null) {
+            if (addresses[regexGroups[2]]!![houseNumber] != null) {
+                addresses[regexGroups[2]]!![houseNumber]!!.add(regexGroups[1])
+            } else {
+                addresses[regexGroups[2]]!![houseNumber] = sortedSetOf(regexGroups[1])
+            }
+        } else {
+            addresses[regexGroups[2]] = sortedMapOf(houseNumber to sortedSetOf(regexGroups[1]))
+        }
+    }
+    val outputPath = Paths.get(outputName)
+    if (Files.exists(outputPath)) {
+        Files.delete(outputPath)
+    }
+    Files.createFile(outputPath)
+    val sb = StringBuilder()
+    val bufferedWriter = Files.newBufferedWriter(outputPath)
+    addresses.forEach { houseAddress ->
+        houseAddress.value.forEach {
+            sb.append(houseAddress.key)
+            sb.append(" ${it.key}")
+            sb.append(" - ")
+            sb.append(it.value.joinToString(", "))
+            sb.append("\n")
+            bufferedWriter.append(sb)
+            sb.clear()
+        }
+    }
+    bufferedWriter.flush()
+    bufferedWriter.close()
 }
 
 /**
@@ -97,7 +146,22 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val path = try {
+        Paths.get(inputName)
+    } catch (e: InvalidPathException) {
+        println("Некорректный путь.")
+        return
+    }
+
+    val lines = try {
+        Files.readAllLines(path)
+    } catch (e: IOException) {
+        println("Ошибка чтения.")
+        return
+    } catch (e: SecurityException) {
+        println("Недостаточно прав для чтения файла.")
+        return
+    }
 }
 
 /**
