@@ -77,7 +77,6 @@ fun sortAddresses(inputName: String, outputName: String) {
     val lines = Files.readAllLines(inputPath)
     val addresses = sortedMapOf<String, SortedMap<Int, SortedSet<String>>>()
     lines.forEach { line ->
-        println(line)
         val matchResult =
             Regex("""([A-ZА-ЯЁ][A-Za-zА-Яа-яё\-]* [А-ЯЁA-Z][A-Za-zА-Яа-яёЁ\-]*) - ([А-ЯЁA-Z][A-Za-zА-Яа-яё\-]*) (\d+)""").matchEntire(line)
                 ?: throw IllegalArgumentException("Некорректный формат файла.")
@@ -146,22 +145,17 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    val path = try {
-        Paths.get(inputName)
-    } catch (e: InvalidPathException) {
-        println("Некорректный путь.")
-        return
+    val inputPath = Paths.get(inputName)
+    val lines = Files.readAllLines(inputPath).map { it.toFloat() }.sorted()
+    val outputPath = Paths.get(outputName)
+    if (Files.exists(outputPath)) {
+        Files.delete(outputPath)
     }
-
-    val lines = try {
-        Files.readAllLines(path)
-    } catch (e: IOException) {
-        println("Ошибка чтения.")
-        return
-    } catch (e: SecurityException) {
-        println("Недостаточно прав для чтения файла.")
-        return
-    }
+    Files.createFile(outputPath)
+    val bufferedWriter = Files.newBufferedWriter(outputPath)
+    bufferedWriter.append(lines.joinToString ("\n"))
+    bufferedWriter.flush()
+    bufferedWriter.close()
 }
 
 /**
