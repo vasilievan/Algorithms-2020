@@ -79,15 +79,15 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Средняя
      */
+
     override fun remove(element: T): Boolean {
-        TODO()
+        // TODO()
+        throw NotImplementedError()
     }
 
-    override fun comparator(): Comparator<in T>? =
-        null
+    override fun comparator(): Comparator<in T>? = null
 
-    override fun iterator(): MutableIterator<T> =
-        BinarySearchTreeIterator()
+    override fun iterator(): MutableIterator<T> = BinarySearchTreeIterator()
 
     inner class BinarySearchTreeIterator internal constructor() : MutableIterator<T> {
 
@@ -136,8 +136,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
+
         override fun remove() {
-            // TODO
             throw NotImplementedError()
         }
 
@@ -159,6 +159,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      *
      * Очень сложная (в том случае, если спецификация реализуется в полном объёме)
      */
+
     override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
         TODO()
     }

@@ -2,6 +2,9 @@
 
 package lesson2
 
+import kotlin.math.sign
+import kotlin.math.sqrt
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -94,8 +97,31 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+
+// память O(m*n), m - длина first, n - длина second
+// производительность O(m*n)
+
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    var maximumLength = 0
+    val simularitiesArray = List(first.length) { MutableList(second.length) { 0 } }
+    var lastIndex = -1
+    for (i in first.indices) {
+        for (j in second.indices) {
+            if (first[i] == second[j]) {
+                if (i == 0 || j == 0) {
+                    simularitiesArray[i][j] = 1
+                } else {
+                    simularitiesArray[i][j] = simularitiesArray[i - 1][j - 1] + 1
+                }
+                if (maximumLength < simularitiesArray[i][j]) {
+                    maximumLength = simularitiesArray[i][j]
+                    lastIndex = i
+                }
+            }
+        }
+    }
+    lastIndex++
+    return first.substring(lastIndex - maximumLength, lastIndex)
 }
 
 /**
@@ -108,6 +134,20 @@ fun longestCommonSubstring(first: String, second: String): String {
  * Справка: простым считается число, которое делится нацело только на 1 и на себя.
  * Единица простым числом не считается.
  */
+
+// память O(n)
+// производительность O(n*sqrt(n))
+
 fun calcPrimesNumber(limit: Int): Int {
-    TODO()
+    if (limit <= 1) return 0
+    val erathosphen: MutableList<Int?> = MutableList(limit + 1) { it }
+    erathosphen[0] = null
+    erathosphen[1] = null
+    for (i in 2..sqrt(erathosphen.size.toFloat()).toInt()) {
+        for (k in 2..erathosphen.size) {
+            if (k * i >= erathosphen.size) break
+            erathosphen[k * i] = null
+        }
+    }
+    return erathosphen.count { it != null }
 }

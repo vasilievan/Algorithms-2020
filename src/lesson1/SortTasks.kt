@@ -2,14 +2,11 @@
 
 package lesson1
 
-import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.lang.StringBuilder
 import java.nio.file.Files
-import java.nio.file.InvalidPathException
 import java.nio.file.Paths
 import java.util.*
-import kotlin.coroutines.coroutineContext
 
 /**
  * Сортировка времён
@@ -71,6 +68,9 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+
+// производительность O(n)
+// память O(n)
 
 fun sortAddresses(inputName: String, outputName: String) {
     val inputPath = Paths.get(inputName)
@@ -144,6 +144,10 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 99.5
  * 121.3
  */
+
+// производительность O(n)
+// память O(n)
+
 fun sortTemperatures(inputName: String, outputName: String) {
     val inputPath = Paths.get(inputName)
     val lines = Files.readAllLines(inputPath).map { it.toFloat() }.sorted()
@@ -153,7 +157,7 @@ fun sortTemperatures(inputName: String, outputName: String) {
     }
     Files.createFile(outputPath)
     val bufferedWriter = Files.newBufferedWriter(outputPath)
-    bufferedWriter.append(lines.joinToString ("\n"))
+    bufferedWriter.append(lines.joinToString("\n"))
     bufferedWriter.flush()
     bufferedWriter.close()
 }
