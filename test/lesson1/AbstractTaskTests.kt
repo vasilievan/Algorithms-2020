@@ -73,6 +73,13 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+
+        try {
+            sortAddresses("input/addr_in_vasiliev.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/addr_out_vasiliev.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
     }
 
     private fun generateTemperatures(size: Int): PerfResult<Unit> {
@@ -113,6 +120,19 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                     24.7
                     99.5
                     121.3
+                """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+
+        try {
+            sortTemperatures("input/temp_in_vasiliev.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                    -100.0
+                    100.0
                 """.trimIndent()
             )
         } finally {
