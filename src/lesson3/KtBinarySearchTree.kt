@@ -95,6 +95,9 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         }
     }
 
+    // память O(n)
+    // производительность, средняя O(log(n))
+
     override fun remove(element: T): Boolean {
         val node = find(element) ?: return false
         if (node.value != element) return false
@@ -118,15 +121,6 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         }
         size--
         return true
-    }
-
-    private fun visitTree(node: Node<T>?) {
-        if (node != null) {
-            visitTree(node.left)
-            print(node.value)
-            print("  ")
-            visitTree(node.right)
-        }
     }
 
     override fun comparator(): Comparator<in T>? = null
@@ -159,6 +153,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
             }
         }
 
+        // производительность, O(1)
+
         override fun hasNext(): Boolean = !stack.empty()
 
         /**
@@ -175,6 +171,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          * Средняя
          */
 
+        // производительность O(log(n))
 
         override fun next(): T {
             if (!hasNext()) throw NoSuchElementException()
@@ -196,6 +193,8 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
          *
          * Сложная
          */
+
+        // производительность, средний случай O(log(n))
 
         override fun remove() {
             if (current == null) throw IllegalStateException()
@@ -222,16 +221,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
      */
 
     override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
-        val answer = sortedSetOf<T>()
-        if (fromElement == toElement) return answer
-        val iter = iterator()
-        while (iter.hasNext()) {
-            val current = iter.next()
-            if (current >= fromElement && current < toElement) {
-                answer.add(current)
-            }
-        }
-        return answer
+        TODO()
     }
 
     /**

@@ -2,7 +2,6 @@
 
 package lesson2
 
-import kotlin.math.sign
 import kotlin.math.sqrt
 
 /**
@@ -136,18 +135,21 @@ fun longestCommonSubstring(first: String, second: String): String {
  */
 
 // память O(n)
-// производительность O(n*sqrt(n))
+// производительность O(n*loglog(n))
 
 fun calcPrimesNumber(limit: Int): Int {
     if (limit <= 1) return 0
-    val erathosphen: MutableList<Int?> = MutableList(limit + 1) { it }
-    erathosphen[0] = null
-    erathosphen[1] = null
-    for (i in 2..sqrt(erathosphen.size.toFloat()).toInt()) {
-        for (k in 2..erathosphen.size) {
-            if (k * i >= erathosphen.size) break
-            erathosphen[k * i] = null
+    val erathosphen: MutableList<Boolean> = MutableList(limit + 1) { true }
+    erathosphen[0] = false
+    erathosphen[1] = false
+    for (i in 2 until erathosphen.size) {
+        if (erathosphen[i]) {
+            var j = 2
+            while (i * j < erathosphen.size) {
+                erathosphen[i * j] = false
+                j++
+            }
         }
     }
-    return erathosphen.count { it != null }
+    return erathosphen.count { it }
 }

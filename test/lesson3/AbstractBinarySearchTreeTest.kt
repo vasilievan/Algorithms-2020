@@ -4,6 +4,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.test.*
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import kotlin.IllegalStateException
 import kotlin.NoSuchElementException
 
@@ -160,6 +161,9 @@ abstract class AbstractBinarySearchTreeTest {
                     "The tree doesn't have the element $element from the control set."
                 )
             }
+
+            val bs = create()
+            assertFalse(bs.remove(12))
             println("All clear!")
         }
     }
@@ -270,6 +274,9 @@ abstract class AbstractBinarySearchTreeTest {
                     "The tree has the element $element that is not in control set."
                 )
             }
+
+            val bs = create()
+            assertThrows<java.lang.IllegalStateException> { bs.iterator().remove() }
             println("All clear!")
         }
     }

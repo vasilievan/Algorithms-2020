@@ -69,7 +69,7 @@ fun sortTimes(inputName: String, outputName: String) {
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
 
-// производительность O(n)
+// производительность O(n*log(n))
 // память O(n)
 
 fun sortAddresses(inputName: String, outputName: String) {
@@ -82,14 +82,16 @@ fun sortAddresses(inputName: String, outputName: String) {
                 ?: throw IllegalArgumentException("Некорректный формат файла.")
         val regexGroups = matchResult.groupValues
         val houseNumber = regexGroups[3].toInt()
-        if (addresses[regexGroups[2]] != null) {
-            if (addresses[regexGroups[2]]!![houseNumber] != null) {
-                addresses[regexGroups[2]]!![houseNumber]!!.add(regexGroups[1])
+        val street = addresses[regexGroups[2]]
+        val manName = regexGroups[1]
+        if (street != null) {
+            if (street[houseNumber] != null) {
+                street[houseNumber]!!.add(manName)
             } else {
-                addresses[regexGroups[2]]!![houseNumber] = sortedSetOf(regexGroups[1])
+                street[houseNumber] = sortedSetOf(manName)
             }
         } else {
-            addresses[regexGroups[2]] = sortedMapOf(houseNumber to sortedSetOf(regexGroups[1]))
+            addresses[regexGroups[2]] = sortedMapOf(houseNumber to sortedSetOf(manName))
         }
     }
     val outputPath = Paths.get(outputName)
@@ -145,7 +147,7 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 
-// производительность O(n)
+// производительность O(n*log(n))
 // память O(n)
 
 fun sortTemperatures(inputName: String, outputName: String) {
