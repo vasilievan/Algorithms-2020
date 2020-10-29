@@ -123,6 +123,29 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
         return true
     }
 
+    private fun removeWithoutSearch(node: Node<T>): Boolean {
+        when {
+            node.left == null -> swap(node, node.right)
+            node.right == null -> swap(node, node.left)
+            else -> {
+                var minimal = node.right
+                while (minimal!!.left != null) {
+                    minimal = minimal.left!!
+                }
+                if (minimal.parent != node) {
+                    swap(minimal, minimal.right)
+                    minimal.right = node.right
+                    minimal.right!!.parent = minimal
+                }
+                swap(node, minimal)
+                minimal.left = node.left
+                minimal.left!!.parent = minimal
+            }
+        }
+        size--
+        return true
+    }
+
     override fun comparator(): Comparator<in T>? = null
 
     override fun iterator(): MutableIterator<T> = BinarySearchTreeIterator()
@@ -198,7 +221,7 @@ class KtBinarySearchTree<T : Comparable<T>> : AbstractMutableSet<T>(), Checkable
 
         override fun remove() {
             if (current == null) throw IllegalStateException()
-            remove(current!!.value)
+            removeWithoutSearch(current!!)
             current = null
         }
     }

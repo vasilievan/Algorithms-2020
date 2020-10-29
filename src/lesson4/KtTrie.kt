@@ -71,5 +71,4 @@ class KtTrie : AbstractMutableSet<String>(), MutableSet<String> {
     override fun iterator(): MutableIterator<String> {
         TODO()
     }
-
 }

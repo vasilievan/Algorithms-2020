@@ -14,9 +14,11 @@ package lesson7
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
  */
+
 fun longestCommonSubSequence(first: String, second: String): String {
     TODO()
 }
+
 
 /**
  * Наибольшая возрастающая подпоследовательность
@@ -33,6 +35,7 @@ fun longestCommonSubSequence(first: String, second: String): String {
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
     TODO()
 }
+
 
 /**
  * Самый короткий маршрут на прямоугольном поле.

@@ -8,6 +8,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         require(bits in 2..31)
     }
 
+    // 2^bits
     private val capacity = 1 shl bits
 
     private val storage = Array<Any?>(capacity) { null }
@@ -17,6 +18,9 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
     /**
      * Индекс в таблице, начиная с которого следует искать данный элемент
      */
+
+    // Int.MAX_VALUE = (2^31)-1 moved to some
+    // Int.MAX_VALUE shr 30 = (2^30)-1
     private fun T.startingIndex(): Int {
         return hashCode() and (0x7FFFFFFF shr (31 - bits))
     }
@@ -31,7 +35,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             if (current == element) {
                 return true
             }
-            index = (index + 1) % capacity
+            index = calcIndex(index)
             current = storage[index]
         }
         return false
@@ -55,7 +59,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             if (current == element) {
                 return false
             }
-            index = (index + 1) % capacity
+            index = calcIndex(index)
             check(index != startingIndex) { "Table is full" }
             current = storage[index]
         }
@@ -76,8 +80,29 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя
      */
     override fun remove(element: T): Boolean {
-        TODO("not implemented")
+        var index = element.startingIndex()
+        var current = storage[index]
+        while (current != null) {
+            if (current == element) {
+                var newInd = calcIndex(index)
+                storage[index] = null
+                while (storage[newInd] != null) {
+                    storage[index] = storage[newInd]
+                    storage[newInd] = null
+                    index = newInd
+                    newInd = calcIndex(index)
+                }
+                storage[newInd] = null
+                size--
+                return true
+            }
+            index = calcIndex(index)
+            current = storage[index]
+        }
+        return false
     }
+
+    private fun calcIndex(index: Int): Int = (index + 1) % capacity
 
     /**
      * Создание итератора для обхода таблицы
@@ -89,7 +114,38 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя (сложная, если поддержан и remove тоже)
      */
-    override fun iterator(): MutableIterator<T> {
-        TODO("not implemented")
+    override fun iterator(): MutableIterator<T> = HashIter()
+
+    inner class HashIter : MutableIterator<T> {
+        var currentPosition = 0
+        var next: T? = null
+
+        override fun hasNext(): Boolean {
+            for (i in currentPosition until capacity) {
+                if (storage[i] != null) {
+                    currentPosition = i
+                    return true
+                }
+            }
+            return false
+        }
+
+        override fun next(): T {
+            if (!hasNext()) throw IllegalStateException()
+            val toBeReturned = storage[currentPosition] as T
+            next = toBeReturned
+            currentPosition++
+            for (i in currentPosition until capacity) {
+                if (storage[i] != null) {
+                    currentPosition = i
+                    break
+                }
+            }
+            return toBeReturned
+        }
+
+        override fun remove() {
+            TODO()
+        }
     }
 }

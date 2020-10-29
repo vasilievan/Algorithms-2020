@@ -153,3 +153,19 @@ fun calcPrimesNumber(limit: Int): Int {
     }
     return erathosphen.count { it }
 }
+
+// более оптимальное решение
+
+fun optimalErathosphen(limit: Int): Int {
+    if (limit <= 1) return 0
+    val erathosphen: MutableList<Int?> = MutableList(limit + 1) { it }
+    erathosphen[0] = null
+    erathosphen[1] = null
+    for (i in 2..sqrt(erathosphen.size.toFloat()).toInt()) {
+        for (k in 2..erathosphen.size) {
+            if (k * i >= erathosphen.size) break
+            erathosphen[k * i] = null
+        }
+    }
+    return erathosphen.count { it != null }
+}

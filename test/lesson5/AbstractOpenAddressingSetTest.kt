@@ -76,6 +76,9 @@ abstract class AbstractOpenAddressingSetTest {
                 )
             }
         }
+
+        val addressingSet = KtOpenAddressingSet<Int>(2)
+        assertFalse { addressingSet.remove(112) }
     }
 
     protected fun doIteratorTest() {
@@ -116,6 +119,11 @@ abstract class AbstractOpenAddressingSetTest {
             assertFailsWith<IllegalStateException>("Something was supposedly returned after the elements ended") {
                 openAddressingSetIter.next()
             }
+
+            val addressingSet = KtOpenAddressingSet<Int>(2)
+            val iter = addressingSet.iterator()
+            assertFailsWith<java.lang.IllegalStateException> { iter.next() }
+
             println("All clear!")
         }
     }
