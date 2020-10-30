@@ -79,6 +79,10 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      *
      * Средняя
      */
+
+    // производительность O(1)
+    // память O(1)
+
     override fun remove(element: T): Boolean {
         var index = element.startingIndex()
         var current = storage[index]
@@ -120,6 +124,10 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         var currentPosition = 0
         var next: T? = null
 
+        // производительность O(n) худший случай - попали в самом конце на не-null в массиве
+        // производительность O(1) лучший случай - попали сразу на не-null
+        // память O(1)
+
         override fun hasNext(): Boolean {
             for (i in currentPosition until capacity) {
                 if (storage[i] != null) {
@@ -129,6 +137,10 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             }
             return false
         }
+
+        // производительность O(n) худший случай - попали в самом конце на не-null в массиве
+        // производительность O(1) лучший случай - попали сразу на не-null
+        // память O(1)
 
         override fun next(): T {
             if (!hasNext()) throw IllegalStateException()
