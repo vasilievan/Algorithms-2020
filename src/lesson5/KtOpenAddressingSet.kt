@@ -80,7 +80,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя
      */
 
-    // производительность O(1)
+    // производительность O(1) - лучший случай, когда не нужно сдвигать последующие
+    // производительность O(n) - худший случай, когда нужно сдвигать все последующие
     // память O(1)
 
     override fun remove(element: T): Boolean {
