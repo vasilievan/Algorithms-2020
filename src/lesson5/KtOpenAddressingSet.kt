@@ -29,7 +29,8 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Проверка, входит ли данный элемент в таблицу
      */
     override fun contains(element: T): Boolean {
-        var index = element.startingIndex()
+        val startIndex = element.startingIndex()
+        var index = startIndex
         var current = storage[index]
         while (current != null) {
             if (current == element) {
@@ -56,6 +57,9 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         var index = startingIndex
         var current = storage[index]
         while (current != null) {
+            // если ячейка уже была занята раньше, а потом данные из нее удалили
+            // запишу в нее данные снова
+            if (current == deleted) break
             if (current == element) {
                 return false
             }
@@ -80,30 +84,27 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
      * Средняя
      */
 
-    // производительность O(1) - лучший случай, когда не нужно сдвигать последующие
-    // производительность O(n) - худший случай, когда нужно сдвигать все последующие
+    // производительность O(1)
     // память O(1)
 
+    // создам особый флаг, чтоб помечать ячейку, из которой удалил информацию,
+    // для сохранения доступа к последующим ячейкам
+    private object deleted
+
     override fun remove(element: T): Boolean {
-        var index = element.startingIndex()
+        val start = element.startingIndex()
+        var index = start
         var current = storage[index]
-        while (current != null) {
+        do {
             if (current == element) {
-                var newInd = calcIndex(index)
-                storage[index] = null
-                while (storage[newInd] != null) {
-                    storage[index] = storage[newInd]
-                    storage[newInd] = null
-                    index = newInd
-                    newInd = calcIndex(index)
-                }
-                storage[newInd] = null
+                storage[index] = deleted
                 size--
                 return true
             }
             index = calcIndex(index)
+            if (index == start) return false
             current = storage[index]
-        }
+        } while (current != null)
         return false
     }
 
@@ -123,7 +124,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
     inner class HashIter : MutableIterator<T> {
         var currentPosition = 0
-        var next: T? = null
+        var next: Any? = null
 
         // производительность O(n) худший случай - попали в самом конце на не-null в массиве
         // производительность O(1) лучший случай - попали сразу на не-null
@@ -131,7 +132,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
         override fun hasNext(): Boolean {
             for (i in currentPosition until capacity) {
-                if (storage[i] != null) {
+                if (storage[i] != null && storage[i] != deleted) {
                     currentPosition = i
                     return true
                 }
@@ -149,7 +150,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             next = toBeReturned
             currentPosition++
             for (i in currentPosition until capacity) {
-                if (storage[i] != null) {
+                if (storage[i] != null && storage[i] != deleted) {
                     currentPosition = i
                     break
                 }
@@ -157,8 +158,13 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             return toBeReturned
         }
 
+        // память O(1)
+        // производительность O(1)
+
         override fun remove() {
-            TODO()
+            if (next == null) throw IllegalStateException()
+            remove(next)
+            next = null
         }
     }
 }
