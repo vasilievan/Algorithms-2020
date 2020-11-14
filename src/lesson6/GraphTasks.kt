@@ -2,6 +2,10 @@
 
 package lesson6
 
+import lesson6.impl.GraphBuilder
+import java.util.*
+
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -60,8 +64,42 @@ fun Graph.findEulerLoop(): List<Graph.Edge> {
  * |
  * J ------------ K
  */
+
+// решил алгоритмом Прима
+// производительность O(e*log(v)) , e-к-во ребер, v-к-во вершин
+// память - O(e+v)
+
 fun Graph.minimumSpanningTree(): Graph {
-    TODO()
+    val gb = GraphBuilder()
+    val root = vertices.firstOrNull() ?: return gb.build()
+    val vertexes = mutableSetOf(root)
+    span(gb, vertexes)
+    return gb.build()
+}
+
+private fun Graph.span(gb: GraphBuilder, vertexes: MutableSet<Graph.Vertex>) {
+    var minimalEgde: Graph.Edge? = null
+    vertexes.forEach { vertex ->
+        val probablyMinEdge = getConnections(vertex)
+            .filter { it.value.begin !in vertexes || it.value.end !in vertexes }
+            .minByOrNull { it.value.weight }?.value
+        if (minimalEgde == null) minimalEgde = probablyMinEdge
+        if (minimalEgde != null &&
+            probablyMinEdge != null &&
+            minimalEgde!!.weight > probablyMinEdge.weight
+        ) minimalEgde = probablyMinEdge
+    }
+    if (minimalEgde != null) {
+        if (minimalEgde!!.begin in vertexes) {
+            vertexes.add(minimalEgde!!.end)
+            gb.addVertex(minimalEgde!!.end.name)
+        } else {
+            vertexes.add(minimalEgde!!.begin)
+            gb.addVertex(minimalEgde!!.begin.name)
+        }
+        gb.addConnection(minimalEgde!!)
+        return span(gb, vertexes)
+    } else return
 }
 
 /**
@@ -114,8 +152,23 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+
+// производительность O(p*e), где p - к-во путей, e - среднее к-во рёбер каждой вершины,
+// память - O(p)
+// очевидно, наиболее проблемные графы с огромным
+// количеством связей между вершинами
+
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    var answer = Path()
+    val possiblePaths = Stack<Path>()
+    vertices.forEach { possiblePaths.push(Path(it)) }
+    while (possiblePaths.isNotEmpty()) {
+        val currentPath = possiblePaths.pop()
+        if (answer.length < currentPath.length) answer = currentPath
+        val neighbours = getNeighbors(currentPath.vertices[currentPath.length])
+        neighbours.forEach { if (it !in currentPath) possiblePaths.push(Path(currentPath, this, it)) }
+    }
+    return answer
 }
 
 /**

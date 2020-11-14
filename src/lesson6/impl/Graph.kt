@@ -32,6 +32,8 @@ class GraphBuilder {
         vertices[v.name] = v
     }
 
+    operator fun contains(v: Vertex): Boolean = v.name in vertices
+
     fun addVertex(name: String): Vertex {
         return VertexImpl(name).apply {
             addVertex(this)
@@ -42,6 +44,12 @@ class GraphBuilder {
         val edge = EdgeImpl(weight, begin, end)
         connections[begin] = connections[begin]?.let { it + edge } ?: setOf(edge)
         connections[end] = connections[end]?.let { it + edge } ?: setOf(edge)
+    }
+
+    fun addConnection(myEdge: Edge) {
+        val edge = myEdge as EdgeImpl
+        connections[edge.begin] = connections[edge.begin]?.let { it + edge } ?: setOf(edge)
+        connections[edge.end] = connections[edge.end]?.let { it + edge } ?: setOf(edge)
     }
 
     fun build(): Graph = object : Graph {
