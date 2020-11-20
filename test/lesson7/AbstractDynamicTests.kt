@@ -1,5 +1,6 @@
 package lesson7
 
+import kotlin.random.Random.Default.nextBoolean
 import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
@@ -58,6 +59,21 @@ abstract class AbstractDynamicTests {
             )
         )
         assertEquals(listOf(2, 3), longestIncreasingSubSequence(listOf(2, 2, 2, 3)))
+
+        // Сгенерированный тест
+        val possibleNumbers = 31..42
+        val list = mutableListOf(possibleNumbers.first)
+        var index = 0
+        while (index < possibleNumbers.last - possibleNumbers.first) {
+            if (nextBoolean()) {
+                index++
+                list.add(possibleNumbers.elementAt(index))
+            } else {
+                list.add(0)
+            }
+        }
+        val expected = possibleNumbers.toList()
+        assertEquals(expected, longestIncreasingSubSequence(expected))
     }
 
     fun shortestPathOnField(shortestPathOnField: (String) -> Int) {

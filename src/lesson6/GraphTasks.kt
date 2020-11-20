@@ -3,6 +3,7 @@
 package lesson6
 
 import lesson6.impl.GraphBuilder
+import org.jetbrains.annotations.NotNull
 import java.util.*
 
 
@@ -89,17 +90,17 @@ private fun Graph.span(gb: GraphBuilder, vertexes: MutableSet<Graph.Vertex>) {
             minimalEgde!!.weight > probablyMinEdge.weight
         ) minimalEgde = probablyMinEdge
     }
-    if (minimalEgde != null) {
-        if (minimalEgde!!.begin in vertexes) {
-            vertexes.add(minimalEgde!!.end)
-            gb.addVertex(minimalEgde!!.end.name)
-        } else {
-            vertexes.add(minimalEgde!!.begin)
-            gb.addVertex(minimalEgde!!.begin.name)
-        }
-        gb.addConnection(minimalEgde!!)
-        return span(gb, vertexes)
-    } else return
+    // Завел дополнительную переменную для решения !! проблемы
+    val foundME = if (minimalEgde != null) minimalEgde!! else return
+    if (foundME.begin in vertexes) {
+        vertexes.add(foundME.end)
+        gb.addVertex(foundME.end.name)
+    } else {
+        vertexes.add(foundME.begin)
+        gb.addVertex(foundME.begin.name)
+    }
+    gb.addConnection(foundME)
+    return span(gb, vertexes)
 }
 
 /**
@@ -153,10 +154,13 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
 
-// производительность O(p*e), где p - к-во путей, e - среднее к-во рёбер каждой вершины,
-// память - O(p)
-// очевидно, наиболее проблемные графы с огромным
-// количеством связей между вершинами
+// в задаче нужно перебрать возможные сочетания из вершин (aka пути) без повторений.
+// Рассмотрю случай со всеми сочетаниями.
+// Всё начинается с сочетаний из n элементов по 1,
+// дальше - из n элементов по 2 и т.д, в конце - из n эл. по n:
+// n + n(n-1)/2 + n(n-1)(n-2)/6 ... + n + 1 = 2^n - 1 (единица получилась при n эл. по 0)
+// таким образом, производительность O(2^n)
+// память - O(2^n)
 
 fun Graph.longestSimplePath(): Path {
     var answer = Path()
