@@ -59,7 +59,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         while (current != null) {
             // если ячейка уже была занята раньше, а потом данные из нее удалили
             // запишу в нее данные снова
-            if (current == deleted) break
+            if (current == Deleted) break
             if (current == element) {
                 return false
             }
@@ -92,7 +92,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
     // создам особый флаг, чтоб помечать ячейку, из которой удалил информацию,
     // для сохранения доступа к последующим ячейкам
-    private object deleted
+    private object Deleted
 
     override fun remove(element: T): Boolean {
         val start = element.startingIndex()
@@ -100,7 +100,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
         var current = storage[index]
         do {
             if (current == element) {
-                storage[index] = deleted
+                storage[index] = Deleted
                 size--
                 return true
             }
@@ -135,7 +135,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
 
         override fun hasNext(): Boolean {
             for (i in currentPosition until capacity) {
-                if (storage[i] != null && storage[i] != deleted) {
+                if (storage[i] != null && storage[i] != Deleted) {
                     currentPosition = i
                     return true
                 }
@@ -153,7 +153,7 @@ class KtOpenAddressingSet<T : Any>(private val bits: Int) : AbstractMutableSet<T
             next = toBeReturned
             currentPosition++
             for (i in currentPosition until capacity) {
-                if (storage[i] != null && storage[i] != deleted) {
+                if (storage[i] != null && storage[i] != Deleted) {
                     currentPosition = i
                     break
                 }

@@ -91,7 +91,7 @@ private fun Graph.span(gb: GraphBuilder, vertexes: MutableSet<Graph.Vertex>) {
         ) minimalEgde = probablyMinEdge
     }
     // Завел дополнительную переменную для решения !! проблемы
-    val foundME = if (minimalEgde != null) minimalEgde!! else return
+    val foundME = minimalEgde ?: return
     if (foundME.begin in vertexes) {
         vertexes.add(foundME.end)
         gb.addVertex(foundME.end.name)
